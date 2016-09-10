@@ -15,23 +15,6 @@ $(document).ready(function() {
       if (computer_selected.length < 6) {
         if (avail_boxes.length === 1) {
           computer_choice = avail_boxes[0];
-
-          return_computer_choice_id();
-
-          $('#'+computer_choice_id).text(computer_symbol);
-          $('#'+computer_choice_id).off('click');
-          $('#'+computer_choice_id).css('cursor', 'not-allowed');
-          avail_boxes.splice(avail_boxes.indexOf(computer_choice), 1);
-          computer_selected.push(computer_choice);
-
-          check_against_winning_condition('computer');
-
-          if (winning_lines_computer.length !== 0) {
-            $('#announcement').text('The computer wins!');
-          } else {
-            $('#announcement').text('It'+"'"+'s a draw!');
-          }
-          $('#reset').text('PLAY AGAIN?');
         } else {
           if (computer_selected.length === 0) {
             computer_first_choices = [1, 3, 5, 7, 9];
@@ -143,10 +126,15 @@ $(document).ready(function() {
         $('td').off('click');
         $('td').css('cursor', 'not-allowed');
       } else {
-        turn = 'player';
-        a = setTimeout(function(){
-          $('#announcement').text('Your turn');
-        }, 1000);
+        if (avail_boxes.length === 0) {
+          $('#announcement').text('It'+"'"+'s a draw!');
+          $('#reset').text('PLAY AGAIN?');
+        } else {
+          turn = 'player';
+          a = setTimeout(function(){
+            $('#announcement').text('Your turn');
+          }, 1000);
+        }
       }
     } else {
       if (winning_lines_player.length !== 0) {
@@ -502,7 +490,176 @@ $(document).ready(function() {
 
   function runLogicCorner() {
     if (player_selected[0] === 5) {
-      // Write logic is player first move is center
+      if (computer_selected.length === 1) {
+        if (computer_selected[0] === 1) {
+          computer_choice = 9; // Always opposite to first move
+        } else if (computer_selected[0] === 3) {
+          computer_choice = 7;
+        } else if (computer_selected[0] === 7) {
+          computer_choice = 3;
+        } else if (computer_selected[0] === 9) {
+          computer_choice = 1;
+        }
+      }
+      if (computer_selected.length === 2) {
+        if (player_selected[1] === 1) { // Player [5, 1]
+          computer_choice = 9; // Computer choice [3, 7, 9] or [7, 3, 9]
+        } else if (player_selected[1] === 3) { // Player [5, 3]
+          computer_choice = 7; // Computer choice [1, 9, 7] or [9, 1, 7]
+        } else if (player_selected[1] === 7) { // Player [5, 7]
+          computer_choice = 3; // Computer choice [1, 9, 3] or [9, 1, 3]
+        } else if (player_selected[1] === 9) { // Player [5, 9]
+          computer_choice = 1; // Computer choice [3, 7, 1] or [7, 3, 1]
+        } else if (player_selected[1] === 2) { // Player [5, 2]
+          computer_choice = 8; // Computer choice [1, 9, 8] or [9, 1, 8] or [3, 7, 8] or [7, 3, 8]
+        } else if (player_selected[1] === 4) { // Player [5, 4]
+          computer_choice = 6; // Computer choice [1, 9, 6] or [9, 1, 6] or [3, 7, 6] or [7, 3, 6]
+        } else if (player_selected[1] === 6) { // Player [5, 6]
+          computer_choice = 4; // Computer choice [1, 9, 4] or [9, 1, 4] or [3, 7, 4] or [7, 3, 4]
+        } else if (player_selected[1] === 8) { // Player [5, 8]
+          computer_choice = 2; // Computer choice [1, 9, 8] or [9, 1, 8] or [3, 7, 8] or [7, 3, 8]
+        }
+      }
+      if (computer_selected.length === 3) {
+        if (player_selected[1] === 1) {
+          if (player_selected[2] === 6) {
+            computer_choice = 8; // Computer wins [3, 7, 8] or [7, 3, 8]
+          } else if (player_selected[2] === 8) {
+            computer_choice = 6; // Computer wins [3, 7, 6] or [7, 3, 6]
+          } else {
+            computer_choice = 6; // Computer wins [3, 7, 6] or [7, 3, 6]
+          }
+        } else if (player_selected[1] === 3) {
+          if (player_selected[2] === 4) {
+            computer_choice = 8; // Computer wins [1, 9, 8] or [9, 1, 8]
+          } else if (player_selected[2] === 8) {
+            computer_choice = 4; // Computer wins [1, 9, 4] or [9, 1, 4]
+          } else {
+            computer_choice = 4; // Computer wins [1, 9, 4] or [9, 1, 4]
+          }
+        } else if (player_selected[1] === 7) {
+          if (player_selected[2] === 2) {
+            computer_choice = 6; // Computer wins [1, 9, 6] or [9, 1, 6]
+          } else if (player_selected[2] === 6) {
+            computer_choice = 2; // Computer wins [1, 9, 2] or [9, 1, 2]
+          } else {
+            computer_choice = 2; // Computer wins [1, 9, 2] or [9, 1, 2]
+          }
+        } else if (player_selected[1] === 9) {
+          if (player_selected[2] === 2) {
+            computer_choice = 4; // Computer wins [3, 7, 4] or [7, 3, 4]
+          } else if (player_selected[2] === 4) {
+            computer_choice = 2; // Computer wins [3, 7, 2] or [7, 3, 2]
+          } else {
+            computer_choice = 2; // Computer wins [3, 7, 2] or [7, 3, 2]
+          }
+        } else if (computer_selected[0] === 1 || computer_selected[0] === 9) {
+          if (player_selected[1] === 2) {
+            if (player_selected[2] === 7) { // Player [5, 2, 7]
+              computer_choice = 3; // Computer [1, 9, 8, 3] or [9, 1, 8, 3]
+            } else {
+              computer_choice = 7; // Computer wins [1, 9, 8, 7] or [9, 1, 8, 7]
+            }
+          } else if (player_selected[1] === 8) {
+            if (player_selected[2] === 3) {// Player [5, 8, 3]
+              computer_choice = 7; // Computer [1, 9, 2, 7] or [9, 1, 2, 7]
+            } else {
+              computer_choice = 3; // Computer wins [1, 9, 2, 3] or [9, 1, 2, 3]
+            }
+          } else if (player_selected[1] === 4) {
+            if (player_selected[2] === 3) {// Player [5, 4, 3]
+              computer_choice = 7; // Computer [1, 9, 6, 7] or [9, 1, 6, 7]
+            } else {
+              computer_choice = 3; // Computer wins [1, 9, 6, 3] or [9, 1, 6, 3]
+            }
+          } else if (player_selected[1] === 6) {
+            if (player_selected[2] === 7) {// Player [5, 6, 7]
+              computer_choice = 3; // Computer [1, 9, 6, 3] or [9, 1, 6, 3]
+            } else {
+              computer_choice = 7; // Computer wins [1, 9, 6, 7] or [9, 1, 6, 7]
+            }
+          }
+        } else if (computer_selected[0] === 3 || computer_selected[0] === 7) {
+          if (player_selected[1] === 2) {
+            if (player_selected[2] === 9) { // Player [5, 2, 9]
+              computer_choice = 1; // Computer [3, 7, 8, 1] or [7, 3, 8, 1]
+            } else {
+              computer_choice = 9; // Computer wins [3, 7, 8, 9] or [7, 3, 8, 9]
+            }
+          } else if (player_selected[1] === 8) {
+            if (player_selected[2] === 1) {// Player [5, 8, 1]
+              computer_choice = 9; // Computer [3, 7, 2, 9] or [7, 3, 2, 9]
+            } else {
+              computer_choice = 1; // Computer wins [3, 7, 2, 1] or [7, 3, 2, 1]
+            }
+          } else if (player_selected[1] === 4) {
+            if (player_selected[2] === 9) {// Player [5, 4, 9]
+              computer_choice = 1; // Computer [3, 7, 6, 7] or [7, 3, 6, 7]
+            } else {
+              computer_choice = 9; // Computer wins [3, 7, 6, 3] or [7, 3, 6, 3]
+            }
+          } else if (player_selected[1] === 6) {
+            if (player_selected[2] === 1) {// Player [5, 6, 7]
+              computer_choice = 9; // Computer [3, 7, 4, 9] or [7, 3, 4, 9]
+            } else {
+              computer_choice = 1; // Computer wins [3, 7, 4, 1] or [7, 3, 4, 1]
+            }
+          }
+        }
+      }
+      if (computer_selected.length === 4) {
+        // Player starts with [1, 9] or [9, 1]
+        if (computer_selected[2] === 8 && computer_selected[3] === 3) {
+          if (player_selected[3] === 6) {
+            computer_choice = 4; // Draw
+          } else {
+            computer_choice = 6; // Computer wins [1, 9, 8, 3, 6]
+          }
+        } else if (computer_selected[2] === 2 && computer_selected[3] === 7) {
+          if (player_selected[3] === 4) {
+            computer_choice = 6; // Draw
+          } else {
+            computer_choice = 4; // Computer wins [1, 9, 2, 7, 4]
+          }
+        } else if (computer_selected[2] === 6 && computer_selected[3] === 7) {
+          if (player_selected[3] === 8) {
+            computer_choice = 2; // Draw
+          } else {
+            computer_choice = 8; // Computer wins [1, 9, 6, 7, 8]
+          }
+        } else if (computer_selected[2] === 4 && computer_selected[3] === 3) {
+          if (player_selected[3] === 2) {
+            computer_choice = 8; // Draw
+          } else {
+            computer_choice = 2; // Computer wins [1, 9, 4, 3, 2]
+          }
+        // Player starts with [3, 7] or [7, 3]
+        } else if (computer_selected[2] === 8 && computer_selected[3] === 1) {
+          if (player_selected[3] === 4) {
+            computer_choice = 6; // Draw
+          } else {
+            computer_choice = 4; // Computer wins [3, 7, 8, 1, 4]
+          }
+        } else if (computer_selected[2] === 2 && computer_selected[3] === 9) {
+          if (player_selected[3] === 6) {
+            computer_choice = 4; // Draw
+          } else {
+            computer_choice = 6; // Computer wins [3, 7, 2, 9, 6]
+          }
+        } else if (computer_selected[2] === 6 && computer_selected[3] === 1) {
+          if (player_selected[3] === 2) {
+            computer_choice = 8; // Draw
+          } else {
+            computer_choice = 2; // Computer wins [3, 7, 6, 1, 2]
+          }
+        } else if (computer_selected[2] === 4 && computer_selected[3] === 9) {
+          if (player_selected[3] === 8) {
+            computer_choice = 2; // Draw
+          } else {
+            computer_choice = 8; // Computer wins [3, 7, 4, 9, 8]
+          }
+        }
+      }
     } else { // Player first move is not center
       // Computer's first move will always place on a corner
       if (computer_selected.length === 1) {
