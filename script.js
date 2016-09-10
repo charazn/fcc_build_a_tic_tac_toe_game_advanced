@@ -133,7 +133,7 @@ $(document).ready(function() {
           turn = 'player';
           a = setTimeout(function(){
             $('#announcement').text('Your turn');
-          }, 1000);
+          }, 500);
         }
       }
     } else {
